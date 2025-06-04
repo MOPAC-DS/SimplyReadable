@@ -174,6 +174,43 @@ export class dt_translate extends Construct {
 			true,
 		);
 
+		// INFRA | QUICK DOCUMENT TRANSLATION ROLE
+		const policyAuthenticatedPermitQuickDocumentTranslation = new iam.Policy(
+			this,
+			"policyAuthenticatedPermitQuickDocumentTranslation",
+			{
+				policyName: "Translate-Document",
+				statements: [
+					new iam.PolicyStatement({
+						// ASM-IAM // ASM-COG7
+						actions: [
+							"translate:TranslateDocument",
+							"translate:ListTerminologies"
+						],
+						resources: ["*"],
+					}),
+				],
+			},
+		);
+		props.identityPool.authenticatedRole.attachInlinePolicy(
+			policyAuthenticatedPermitQuickDocumentTranslation,
+		);
+		NagSuppressions.addResourceSuppressions(
+			policyAuthenticatedPermitQuickDocumentTranslation,
+			[
+				{
+					id: "AwsSolutions-IAM5",
+					reason: "Action does not apply to a resource. Restricted by action.",
+					appliesTo: [
+						"Action::translate:TranslateDocument",
+						"Action::translate:ListTerminologies",
+						"Resource::*",
+					],
+				},
+			],
+			true,
+		);
+
 		// INFRA | DYNAMODB
 		// INFRA | DYNAMODB | JOBS
 		this.jobTable = new dynamodb.Table(this, "jobTable", {

@@ -5,6 +5,8 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { AwsSolutionsChecks } from "cdk-nag";
 import { DocTranStack } from "./doctran-stack";
+import { Config } from "./types";
+import { loadConfig } from "../util/loadConfig";
 
 export class DocTranAppStage extends cdk.Stage {
 	// OUTPUTS
@@ -17,17 +19,12 @@ export class DocTranAppStage extends cdk.Stage {
 	constructor(scope: Construct, id: string, props?: cdk.StageProps) {
 		super(scope, id, props);
 
-		// ENVIRONMENT VARIABLES
-		// ENVIRONMENT VARIABLES | GITHUB REPO
-		const instanceName: string =
-			process.env.instanceName !== undefined
-				? process.env.instanceName
-				: "main";
+		const config: Config = loadConfig();
 
-		const stackName = `DocTran-${instanceName}-app`;
+		const stackName = `DocTran-${config.common.instance.name}-app`;
 		const docTranStackInstance = new DocTranStack(this, `${stackName}`, {
 			stackName: `${stackName}`,
-			description: `(uksb-1tthgi813) (tag:app)`,
+			description: `(uksb-1tthgi813) (tag:app)${config.app.translation.enable ? ' (tag:translation)' : ''}${config.app.readable.enable ? ' (tag:readable)' : ''}${config.app.webUi.enable ? ' (tag:webui)' : ''}`,
 		});
 
 		// Skip NAG for faster development testing

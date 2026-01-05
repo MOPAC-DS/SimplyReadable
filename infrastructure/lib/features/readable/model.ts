@@ -96,79 +96,50 @@ export class dt_readableModel extends Construct {
 		);
 
 		// EXAMPLE ENTRY
-		// EXAMPLE ENTRY | TEXT
-		new cr.AwsCustomResource(this, "exampleEntryText", {
-			onCreate: {
-				service: "DynamoDB",
-				action: "putItem",
-				parameters: {
-					TableName: this.modelTable.tableName,
-					Item: require("./defaults/text.anthropic-claude.ddb.json"),
-				},
-				physicalResourceId: cr.PhysicalResourceId.of("exampleEntryText"),
+		const models = [
+			{
+				id: "exampleEntryText_claude_4-5_haiku",
+				file: "./defaults/text.anthropic-claude-4-5-haiku.ddb.json",
 			},
-			policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-				resources: [this.modelTable.tableArn],
-			}),
-			installLatestAwsSdk: true,
-		});
-
-		// https://github.com/aws/aws-cdk/issues/30067
-		// // EXAMPLE ENTRY | TEXT
-		// const exampleEntryText_amazonTitan = new cr.AwsCustomResource(this, 'exampleEntryText_amazonTitan', {
-		// 	onCreate: {
-		// 		service: 'DynamoDB',
-		// 		action: 'putItem',
-		// 		parameters: {
-		// 			TableName: this.modelTable.tableName,
-		// 			Item: require('./defaults/text.amazon-titan.ddb.json'),
-		// 		},
-		// 		physicalResourceId: cr.PhysicalResourceId.of('exampleEntryText_amazonTitan'),
-		// 	},
-		// 	policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-		// 		resources: [
-		// 			this.modelTable.tableArn
-		// 		],
-		// 	}),
-		// 	installLatestAwsSdk: true,
-		// });
-
-		// EXAMPLE ENTRY | IMAGE
-		new cr.AwsCustomResource(this, "exampleEntryImage", {
-			onCreate: {
-				service: "DynamoDB",
-				action: "putItem",
-				parameters: {
-					TableName: this.modelTable.tableName,
-					Item: require("./defaults/image.stabilityai-stablediffusion.ddb.json"),
-				},
-				physicalResourceId: cr.PhysicalResourceId.of("exampleEntryImage"),
+			{
+				id: "exampleEntryText_mistral_7b_instruct",
+				file: "./defaults/text.mistral-mistral-7b-instruct.ddb.json",
 			},
-			policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-				resources: [this.modelTable.tableArn],
-			}),
-			installLatestAwsSdk: true,
-		});
+			{
+				id: "exampleEntryText_amazon_nova_v1_pro",
+				file: "./defaults/text.amazon-nova-v1-pro.ddb.json",
+			},
+			{
+				id: "exampleEntryText_amazon_nova_v2_lite",
+				file: "./defaults/text.amazon-nova-v2-lite.ddb.json",
+			},
+			{
+				id: "exampleEntryImage",
+				file: "./defaults/image.stabilityai-stablediffusion.ddb.json",
+			},
+			{
+				id: "exampleEntryImage_stabiltyai_stablediffusion-v3",
+				file: "./defaults/image.stabilityai-stablediffusion-3.ddb.json",
+			},
+		];
 
-		// https://github.com/aws/aws-cdk/issues/30067
-		// // EXAMPLE ENTRY | TEXT
-		// const exampleEntryImage_amazonTitan = new cr.AwsCustomResource(this, 'exampleEntryImage_amazonTitan', {
-		// 	onCreate: {
-		// 		service: 'DynamoDB',
-		// 		action: 'putItem',
-		// 		parameters: {
-		// 			TableName: this.modelTable.tableName,
-		// 			Item: require('./defaults/image.amazon-titan.ddb.json'),
-		// 		},
-		// 		physicalResourceId: cr.PhysicalResourceId.of('exampleEntryImage_amazonTitan'),
-		// 	},
-		// 	policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-		// 		resources: [
-		// 			this.modelTable.tableArn
-		// 		],
-		// 	}),
-		// 	installLatestAwsSdk: true,
-		// });
+		models.forEach((model) => {
+			new cr.AwsCustomResource(this, model.id, {
+				onCreate: {
+					service: "DynamoDB",
+					action: "putItem",
+					parameters: {
+						TableName: this.modelTable.tableName,
+							Item: require(model.file),
+					},
+						physicalResourceId: cr.PhysicalResourceId.of(model.id),
+				},
+				policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+					resources: [this.modelTable.tableArn],
+				}),
+				installLatestAwsSdk: true,
+			});
+		});
 
 		// EXAMPLE ENTRY | CUSTOM RESOURCE CDK LAMBDA
 		NagSuppressions.addResourceSuppressionsByPath(
@@ -197,7 +168,8 @@ export class dt_readableModel extends Construct {
 			[
 				{
 					id: "AwsSolutions-L1",
-					reason: "Custom Resource Lambda defined by CDK project. Unable to specify runtime.",
+					reason:
+						"Custom Resource Lambda defined by CDK project. Unable to specify runtime.",
 				},
 			],
 			true,

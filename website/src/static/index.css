@@ -8,10 +8,26 @@ html {
 	background-color: #fafafa;
 }
 
+
 [class^="awsui_top-navigation"] {
     background-color: #87B7E4 !important;
 	border-bottom: 10px solid #B36691;
 }
+
+/* Default heading color = pure white */
+[class^="awsui_top-navigation"] .amplify-heading,
+[class^="awsui_top-navigation"] .amplify-heading a {
+    color: #ffffff !important;
+}
+
+/* Heading hover / focus color */
+[class^="awsui_top-navigation"] .amplify-heading:hover,
+[class^="awsui_top-navigation"] .amplify-heading:focus,
+[class^="awsui_top-navigation"] .amplify-heading a:hover,
+[class^="awsui_top-navigation"] .amplify-heading a:focus {
+    color: #B36691 !important;
+}
+
 
 
 body {

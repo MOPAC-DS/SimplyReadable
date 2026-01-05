@@ -9,6 +9,7 @@ html {
 }
 
 
+/* Change Top Navigation Background Colour */
 [class^="awsui_top-navigation"] {
     background-color: #87B7E4 !important;
 	border-bottom: 10px solid #B36691;
@@ -25,6 +26,10 @@ html {
   color: #B36691 !important;
 }
 
+/* Remove empty AWSUI logo placeholder */
+[class*="awsui_top-navigation"] [class^="awsui_logo_"] {
+  display: none !important;
+}
 
 
 body {

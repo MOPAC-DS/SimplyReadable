@@ -9,7 +9,8 @@ html {
 }
 
 [class^="awsui_top-navigation"] {
-    background-color: #4B23C0 !important;
+    background-color: #87B7E4 !important;
+	border-bottom: 10px solid #B36691;
 }
 
 

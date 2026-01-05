@@ -23,10 +23,11 @@ export interface props {
 }
 
 enum Strings {
-	modelVendor = "amazon",
-	modelType = "image",
-	modelNamePrefix = "titan-image-",
+	modelVendor = "stability",
+	modelNamePrefix = "sd3-",
 }
+
+const id = "v3";
 
 export class dt_readableWorkflow extends Construct {
 	public readonly invokeModel: tasks.StepFunctionsStartExecution;
@@ -52,9 +53,9 @@ export class dt_readableWorkflow extends Construct {
 		// LAMBDA | INVOKE BEDROCK | POLICY
 		const permitInvokeBedrockModel = new iam.Policy(
 			this,
-			"permitSfnSendSuccess",
+			"permitInvokeModels",
 			{
-				policyName: "Send-Sfn-task-success-to-Sfn-Service",
+				policyName: `Invoke-${Strings.modelVendor}-${Strings.modelNamePrefix}-models`,
 				statements: [
 					new iam.PolicyStatement({
 						// ASM-IAM
@@ -131,9 +132,7 @@ export class dt_readableWorkflow extends Construct {
 			resultPath: "$.prompt",
 			parameters: {
 				Payload: {
-					textToImageParams: {
-						text: sfn.JsonPath.stringAt("$.jobDetails.prePrompt"),
-					},
+					prompt: sfn.JsonPath.stringAt("$.jobDetails.prePrompt"),
 				},
 			},
 		});
@@ -181,11 +180,9 @@ export class dt_readableWorkflow extends Construct {
 		// STATE MACHINE | DEF
 		this.sfnMain = new dt_stepfunction(
 			this,
-			`${cdk.Stack.of(this).stackName}_Readable_${Strings.modelVendor}_${
-				Strings.modelType
-			}`,
+			`${cdk.Stack.of(this).stackName}_Readable_${Strings.modelVendor}_${id}`,
 			{
-				nameSuffix: `Readable_${Strings.modelVendor}_${Strings.modelType}`,
+				nameSuffix: `Readable_${Strings.modelVendor}_${id}`,
 				removalPolicy: props.removalPolicy,
 				definition: createPrompt
 					.next(createBody)
@@ -219,7 +216,7 @@ export class dt_readableWorkflow extends Construct {
 		// PARENT | TASK
 		this.invokeModel = new tasks.StepFunctionsStartExecution(
 			this,
-			`invokeModel_${Strings.modelVendor}_${Strings.modelType}`,
+			`invokeModel_${Strings.modelVendor}_${id}`,
 			{
 				stateMachine: this.sfnMain,
 				resultSelector: {
